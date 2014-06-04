@@ -2,6 +2,8 @@
 
 Reduced testcase for https://github.com/mapnik/node-mapnik/issues/251
 
+[![Build Status](https://secure.travis-ci.org/springmeyer/gdal-atexit-crash.png)](https://travis-ci.org/springmeyer/gdal-atexit-crash)
+
 ## Depends
 
  - GDAL: gdal-config on PATH
