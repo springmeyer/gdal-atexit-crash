@@ -37,7 +37,7 @@ void AfterWork(uv_work_t* req)
 
 int main(int argc, char *argv[]) {
 
-    void * handle = dlopen("./libtest.dylib",RTLD_LAZY);
+    void * handle = dlopen(SHARED_LIBRARY_NAME,RTLD_LAZY);
     baton_t *baton = new baton_t();
     if (handle) {
         load_func load = reinterpret_cast<load_func>(dlsym(handle, "load_plugin"));

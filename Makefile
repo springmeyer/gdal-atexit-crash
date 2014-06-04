@@ -7,15 +7,15 @@ GDAL_LDFLAGS := $(shell gdal-config --libs)
 OS:=$(shell uname -s)
 ifeq ($(OS),Darwin)
 	SHARED_FLAG = -dynamiclib
-	TEST_LIB = libtest.dylib
+	SHARED_LIBRARY_NAME = ./libtest.dylib
 	GDAL_LDFLAGS += $(shell gdal-config --dep-libs)
 else
 	SHARED_FLAG = -shared
-	TEST_LIB = libtest.so
-	LDFLAGS += -lrt
+	SHARED_LIBRARY_NAME = ./libtest.so
+	LDFLAGS += -ldl -lpthread -lrt
 endif
 
-all: $(TEST_LIB) gdal_test.input
+all: $(SHARED_LIBRARY_NAME) gdal_test.input
 
 ./deps/libuv:
 	git clone git://github.com/joyent/libuv.git ./deps/libuv
@@ -24,17 +24,17 @@ all: $(TEST_LIB) gdal_test.input
 gdal_test.input:
 	$(CXX) -o gdal_test.input plugin.cpp -fPIC $(GDAL_CXXFLAGS) $(GDAL_LDFLAGS) $(SHARED_FLAG)
 
-$(TEST_LIB): gdal_test.input ./deps/libuv test_lib.cpp
-	$(CXX) -o $(TEST_LIB) test_lib.cpp -I./ -fPIC $(CXXFLAGS) $(LDFLAGS) $(SHARED_FLAG)
+$(SHARED_LIBRARY_NAME): gdal_test.input ./deps/libuv test_lib.cpp
+	$(CXX) -o $(SHARED_LIBRARY_NAME) test_lib.cpp -I./ -fPIC $(CXXFLAGS) $(LDFLAGS) $(SHARED_FLAG)
 
-run-test: $(TEST_LIB)
-	$(CXX) -o run-test test.cpp -L./ -ltest -ldl -lpthread $(CXXFLAGS) $(LDFLAGS) -Ideps/libuv/include deps/libuv/.libs/libuv.a
+run-test: $(SHARED_LIBRARY_NAME)
+	$(CXX) -o run-test test.cpp -DSHARED_LIBRARY_NAME=\"$(SHARED_LIBRARY_NAME)\" -L./ -ltest $(CXXFLAGS) -Ideps/libuv/include deps/libuv/.libs/libuv.a $(LDFLAGS)
 
 test: run-test
 	./run-test
 
 clean:
-	rm -rf ./gdal_test.input ./libtest* ./run-test ./run-test.dSYM ./$(TEST_LIB) ./build
+	rm -rf ./gdal_test.input ./libtest* ./run-test ./run-test.dSYM $(SHARED_LIBRARY_NAME) ./build
 
 distclean: clean
 	rm -rf deps
