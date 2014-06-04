@@ -32,7 +32,7 @@ void AfterWork(uv_work_t* req) {
 
 int main() {
     // load up the "gdal_test.input" plugin that links to libgdal
-    testcase::load_plugin();
+    assert(testcase::load_plugin() == true);
     // create a baton to pass into the libuv threadpool
     baton_t *baton = new baton_t();
     baton->request.data = baton;

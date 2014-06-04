@@ -1,6 +1,6 @@
 CXX := $(CXX)
-CXXFLAGS := $(CXXFLAGS) -DDEBUG -g -O0
-LDFLAGS := $(LDFLAGS)
+CXXFLAGS := -DDEBUG -g -O0
+LDFLAGS :=
 GDAL_CXXFLAGS := $(shell gdal-config --cflags)
 GDAL_LDFLAGS := $(shell gdal-config --libs)
 
