@@ -5,7 +5,6 @@
 Reduced testcase for:
 
  - http://trac.osgeo.org/gdal/ticket/5509
- - https://github.com/mapnik/node-mapnik/issues/251
 
 ## Depends
 
@@ -20,12 +19,12 @@ This testcase demonstrates a segfault that happens in a thread as it exits.
 The testcase includes:
 
   - test.cpp - A command line program that runs a thread of work using libuv
-  - libtest - A shared library that does work in the thread pool
+  - libtest - A shared library that loads gdal_plugin and calls a symbol from it in the thread pool
   - gdal_plugin - A shared library that links to libgdal and reads a GeoTIFF
 
-This design mirrors the situation of using Mapnik via Node.js because:
+This design mirrors the situation of using Mapnik via Node.js (where the [original crash was encountered](https://github.com/mapnik/node-mapnik/issues/251)) because:
 
-  - node using `dlopen` to open c++ addons
+  - node uses `dlopen` to open c++ addons
   - in the case of node-mapnik, it links to the libmapnik shared library
   - the libmapnik shared library uses `dlopen` to open `gdal.input`
   - `gdal.input` links to the libgdal library
