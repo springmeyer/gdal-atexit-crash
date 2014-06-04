@@ -1,7 +1,7 @@
 #include <iostream>
 #include <uv.h>
 #include <cassert>
-#include "test_lib.hpp"
+#include "libtest.hpp"
 
 typedef struct {
     uv_work_t request;

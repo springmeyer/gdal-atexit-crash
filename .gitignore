@@ -1,5 +1,7 @@
 .DS_Store
 deps
 build
-gdal_test.input
+gdal_plugin.input
 run-test
+run-test.dSYM
+libtest.dylib*

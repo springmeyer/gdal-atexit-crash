@@ -15,16 +15,22 @@ Reduced testcase for:
 
 ## Discussion
 
-This testcase includes a plugin that is loaded by a shared library which is loaded by a command line program.
+This testcase demonstrates a segfault that happens in a thread as it exits.
 
-This might seem odd, but it models the situation of using Mapnik via Node.js because:
+The testcase includes:
+
+  - test.cpp - A command line program that runs a thread of work using libuv
+  - libtest - A shared library that does work in the thread pool
+  - gdal_plugin - A shared library that links to libgdal and reads a GeoTIFF
+
+This design mirrors the situation of using Mapnik via Node.js because:
 
   - node using `dlopen` to open c++ addons
   - in the case of node-mapnik, it links to the libmapnik shared library
   - the libmapnik shared library uses `dlopen` to open `gdal.input`
   - `gdal.input` links to the libgdal library
 
-I've found that if GDAL is statically or dynamically linked into the main process then this crash does not happen, so the testcase, in order to prompt the crash makes sure to load using dlopen.
+I've found that if GDAL is statically or dynamically linked into the main process or libmapnik then this crash does not happen, so the testcase, in order to prompt the crash makes sure to load using dlopen.
 
 ## Build
 

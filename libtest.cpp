@@ -15,7 +15,7 @@ void unload_plugin() {
 }
 
 bool load_plugin() {
-    plugin_handle = dlopen("./gdal_test.input",RTLD_LAZY);
+    plugin_handle = dlopen("./gdal_plugin.input",RTLD_LAZY);
     if (plugin_handle) {
         // NOTE: commenting this std::atexit avoids crash
         // since the dlclose is required to trigger it
