@@ -2,3 +2,4 @@
 deps
 build
 gdal_test.input
+run-test

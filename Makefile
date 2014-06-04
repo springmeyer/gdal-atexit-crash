@@ -27,7 +27,7 @@ $(TEST_LIB): gdal_test.input ./deps/libuv test_lib.cpp
 	$(CXX) -o $(TEST_LIB) test_lib.cpp -I./ -fPIC $(CXXFLAGS) $(LDFLAGS) $(SHARED_FLAG)
 
 run-test: $(TEST_LIB)
-	$(CXX) -o run-test test.cpp -L./ -ltest $(CXXFLAGS) $(LDFLAGS) -Ideps/libuv/include deps/libuv/.libs/libuv.a
+	$(CXX) -o run-test test.cpp -L./ -ltest -ldl -lpthread $(CXXFLAGS) $(LDFLAGS) -Ideps/libuv/include deps/libuv/.libs/libuv.a
 
 test: run-test
 	./run-test
