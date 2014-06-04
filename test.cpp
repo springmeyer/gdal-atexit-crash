@@ -39,6 +39,7 @@ int main() {
     baton->error = false;
     baton->result = 0;
     // queue up callbacks
+    // learn about libuv at http://nikhilm.github.io/uvbook/introduction.html
     uv_queue_work(uv_default_loop(), &baton->request, DoWork, (uv_after_work_cb)AfterWork);
     // now actually run pending callbacks
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
