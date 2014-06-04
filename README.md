@@ -12,6 +12,21 @@ Reduced testcase for:
  - make / autotools
  - libuv: no need for external install as libuv will be built on the fly
 
+## Details
+
+Versions of GDAL this testcase does crash with:
+
+  - libgdal1h amd64 1.10.0-1~precise1
+  - `brew install gdal` on OS X 10.9 which brings in gdal-1.11.0
+  - gdal-1.11.0 built as minimal static lib by mapnik-packaging
+  - gdal trunk built as minimal static lib by mapnik-packaging
+
+Versions of GDAL this testcase does not crash with:
+
+  - gdal-1.10.1 built as minimal static lib by mapnik-packaging
+
+TODO: test gdal-1.10.1 from source on ubuntu precise
+
 ## Discussion
 
 This testcase demonstrates a segfault that happens in a thread as it exits.
