@@ -1,0 +1,17 @@
+language: cpp
+
+compiler:
+ - clang
+ - gcc
+
+before_install:
+ - sudo apt-get update -y
+
+install:
+ - sudo apt-get install -y libgdal-dev build-essential make
+
+before_script:
+ - make
+
+script:
+ - make test
