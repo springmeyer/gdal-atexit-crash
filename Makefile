@@ -12,6 +12,7 @@ ifeq ($(OS),Darwin)
 else
 	SHARED_FLAG = -shared
 	TEST_LIB = libtest.so
+	LDFLAGS += -lrt
 endif
 
 all: $(TEST_LIB) gdal_test.input
