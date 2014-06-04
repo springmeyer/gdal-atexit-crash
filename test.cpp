@@ -1,6 +1,6 @@
 #include <iostream>
-#include <dlfcn.h>
 #include <uv.h>
+#include "test_lib.hpp"
 
 typedef void (*load_func)();
 typedef int (*run_func)();
@@ -37,32 +37,13 @@ void AfterWork(uv_work_t* req)
 
 int main(int argc, char *argv[]) {
 
-    void * handle = dlopen(SHARED_LIBRARY_NAME,RTLD_LAZY);
+    testcase::load_plugin();
     baton_t *baton = new baton_t();
-    if (handle) {
-        load_func load = reinterpret_cast<load_func>(dlsym(handle, "load_plugin"));
-        if (load) {
-            load();
-        } else {
-            std::clog << "could not load 'load_plugin' symbol\n";            
-        }
-        baton->request.data = baton;
-        baton->error = false;
-        baton->result = 0;
-        baton->callable = reinterpret_cast<run_func>(dlsym(handle, "do_work"));
-        if (baton->callable) {
-            uv_queue_work(uv_default_loop(), &baton->request, DoWork, (uv_after_work_cb)AfterWork);
-        } else {
-            std::clog << "could not load 'do_work' symbol\n";
-        }
-    } else {
-        std::clog << "could not open libtest\n";
-    }
+    baton->request.data = baton;
+    baton->error = false;
+    baton->result = 0;
+    baton->callable = &testcase::do_work;
+    uv_queue_work(uv_default_loop(), &baton->request, DoWork, (uv_after_work_cb)AfterWork);
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
-    if (handle) {
-      dlclose(handle);
-    } else {
-      std::clog << "handle invalid\n";
-    }
     return 0;
 }
