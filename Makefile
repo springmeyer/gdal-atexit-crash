@@ -1,6 +1,6 @@
 CXX := $(CXX)
-CXXFLAGS := -DDEBUG -g -O0
-LDFLAGS :=
+CXXFLAGS := -DDEBUG -g -O0 $(CXXFLAGS)
+LDFLAGS := $(LDFLAGS)
 GDAL_CXXFLAGS := $(shell gdal-config --cflags)
 GDAL_LDFLAGS := $(shell gdal-config --libs)
 
@@ -22,13 +22,13 @@ all: $(SHARED_LIBRARY_NAME) gdal_plugin.input
 	(cd ./deps/libuv/ && ./autogen.sh && ./configure && make)
 
 gdal_plugin.input:
-	$(CXX) -o gdal_plugin.input gdal_plugin.cpp -fPIC $(GDAL_CXXFLAGS) $(GDAL_LDFLAGS) $(SHARED_FLAG)
+	$(CXX) -o gdal_plugin.input gdal_plugin.cpp -fPIC $(GDAL_CXXFLAGS) $(GDAL_LDFLAGS) $(CXXFLAGS) $(LDFLAGS) $(SHARED_FLAG)
 
 $(SHARED_LIBRARY_NAME): gdal_plugin.input ./deps/libuv libtest.cpp
 	$(CXX) -o $(SHARED_LIBRARY_NAME) libtest.cpp -I./ -fPIC $(CXXFLAGS) $(LDFLAGS) $(SHARED_FLAG)
 
 run-test: $(SHARED_LIBRARY_NAME)
-	$(CXX) -o run-test test.cpp -DSHARED_LIBRARY_NAME=\"$(SHARED_LIBRARY_NAME)\" -L./ -ltest $(CXXFLAGS) -Ideps/libuv/include deps/libuv/.libs/libuv.a $(LDFLAGS)
+	$(CXX) -o run-test test.cpp -DSHARED_LIBRARY_NAME=\"$(SHARED_LIBRARY_NAME)\" -L./ -ltest -Ideps/libuv/include deps/libuv/.libs/libuv.a $(CXXFLAGS) $(LDFLAGS)
 
 test: run-test
 	./run-test
