@@ -1,49 +1,48 @@
 #include <iostream>
 #include <uv.h>
+#include <cassert>
 #include "test_lib.hpp"
-
-typedef void (*load_func)();
-typedef int (*run_func)();
-typedef int (*unload_func)();
 
 typedef struct {
     uv_work_t request;
     int result;
     bool error;
-    std::string error_name;
-    run_func callable;
 } baton_t;
 
-void DoWork(uv_work_t* req)
-{
+// Do something related to GDAL and Geotiff access in the threadpool
+void DoWork(uv_work_t* req) {
     baton_t *baton = static_cast<baton_t *>(req->data);
     try
     {
-        baton->result = baton->callable();
+        baton->result = testcase::do_work();
     }
     catch (std::exception const& ex)
     {
         baton->error = true;
-        baton->error_name = ex.what();
     }
 }
 
-void AfterWork(uv_work_t* req)
-{
+// After we return from the threadpool ensure we fetched the correct info
+void AfterWork(uv_work_t* req) {
     baton_t *baton = static_cast<baton_t *>(req->data);
-    std::clog << "result " << baton->result << "\n";
+    // should be 3 bands reported
+    assert(baton->result == 3);
     delete baton;
 }
 
-int main(int argc, char *argv[]) {
-
+int main() {
+    // load up the "gdal_test.input" plugin that links to libgdal
     testcase::load_plugin();
+    // create a baton to pass into the libuv threadpool
     baton_t *baton = new baton_t();
     baton->request.data = baton;
     baton->error = false;
     baton->result = 0;
-    baton->callable = &testcase::do_work;
+    // queue up callbacks
     uv_queue_work(uv_default_loop(), &baton->request, DoWork, (uv_after_work_cb)AfterWork);
+    // now actually run pending callbacks
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
+    // when we get here it means that no more callbacks need to be processed
+    assert(baton->error == false);
     return 0;
 }
